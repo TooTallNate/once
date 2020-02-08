@@ -1,5 +1,5 @@
 {
-  "name": "p-once",
+  "name": "@tootallnate/once",
   "version": "1.0.0",
   "description": "Creates a Promise that waits for a single event",
   "main": "./dist/index.js",
@@ -16,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TooTallNate/p-once.git"
+    "url": "git://github.com/TooTallNate/once.git"
   },
   "keywords": [],
   "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TooTallNate/p-once/issues"
+    "url": "https://github.com/TooTallNate/once/issues"
   },
   "devDependencies": {
     "@types/node": "^12.12.11",
