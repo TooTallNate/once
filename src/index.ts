@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events';
 
+function noop() {}
+
 function once<T>(
 	emitter: EventEmitter,
 	name: string
@@ -28,6 +30,7 @@ namespace once {
 			function cancel() {
 				emitter.removeListener(name, onEvent);
 				emitter.removeListener('error', onError);
+				p.cancel = noop;
 			}
 			function onEvent(...args: any[]) {
 				cancel();
