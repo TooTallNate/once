@@ -25,7 +25,6 @@ namespace once {
 		emitter: EventEmitter,
 		name: string
 	): once.CancellablePromise<T> {
-		let c: once.CancelFunction | null = null;
 		const p = new Promise<T>((resolve, reject) => {
 			function cancel() {
 				emitter.removeListener(name, onEvent);
@@ -40,14 +39,10 @@ namespace once {
 				cancel();
 				reject(err);
 			}
-			c = cancel;
+			p.cancel = cancel;
 			emitter.on(name, onEvent);
 			emitter.on('error', onError);
 		}) as once.CancellablePromise<T>;
-		if (!c) {
-			throw new TypeError('Could not get `cancel()` function');
-		}
-		p.cancel = c;
 		return p;
 	}
 }
