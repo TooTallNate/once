@@ -53,6 +53,11 @@ import once from '@tootallnate/once';
 import { spawn } from 'child_process';
 
 const child = spawn('ls', [], { stdio: 'inherit' });
-const [ code, signal ] = await once.spread<[number, string | null]>(child, 'exit');
+
+// If the process exited, `code` is the final exit code of the process, otherwise `null`.
+// If the process terminated due to receipt of a signal, `signal` is the string name of the signal, otherwise `null`.
+// One of the two will always be non-`null`.
+const [ code, signal ] = await once.spread<[number | null, string | null]>(child, 'exit');
+
 console.log(`child process exited with code=${code}, signal=${signal}`);
 ```
