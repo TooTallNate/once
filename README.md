@@ -16,7 +16,7 @@ $ npm install @tootallnate/once
 API
 ---
 
-## once<T>(emitter: EventEmitter, name: string): CancelablePromise<T>
+### once&lt;T&gt;(emitter: EventEmitter, name: string): CancelablePromise&lt;T&gt;
 
 Creates a promise that waits for event name `name` to occur and resolves the
 promise with the value of the first argument of the event handler function. If an
@@ -39,12 +39,14 @@ emitter.emit('foo', 'bar');
 // "got bar"
 ```
 
-## once.spread<T>(emitter: EventEmitter, name: string): CancelablePromise<T>
+### once.spread&lt;T&gt;(emitter: EventEmitter, name: string): CancelablePromise&lt;T&gt;
 
 Similar to the main `once()` function, except this version is for the less common
 scenario of there being more than one parameter provided to the event handler (for
 example, a `ChildProcess` "exit" event is provided with two arguments: `code` and
 `signal`).
+
+When using TypeScript, the `T` generic type must extend `Array`.
 
 ```typescript
 import once from '@tootallnate/once';
