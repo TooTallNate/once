@@ -5,9 +5,9 @@ function noop() {}
 function once<T>(
 	emitter: EventEmitter,
 	name: string
-): once.CancellablePromise<T> {
+): once.CancelablePromise<T> {
 	const o = once.spread<[T]>(emitter, name);
-	const r = o.then((args: [T]) => args[0]) as once.CancellablePromise<T>;
+	const r = o.then((args: [T]) => args[0]) as once.CancelablePromise<T>;
 	r.cancel = o.cancel;
 	return r;
 }
@@ -17,14 +17,17 @@ namespace once {
 		(): void;
 	}
 
-	export interface CancellablePromise<T> extends Promise<T> {
+	export interface CancelablePromise<T> extends Promise<T> {
 		cancel: CancelFunction;
 	}
+
+	export type CancellablePromise<T> = CancelablePromise<T>;
 
 	export function spread<T extends any[]>(
 		emitter: EventEmitter,
 		name: string
-	): once.CancellablePromise<T> {
+	): once.CancelablePromise<T> {
+		let c: once.CancelFunction | null = null;
 		const p = new Promise<T>((resolve, reject) => {
 			function cancel() {
 				emitter.removeListener(name, onEvent);
@@ -39,10 +42,14 @@ namespace once {
 				cancel();
 				reject(err);
 			}
-			p.cancel = cancel;
+			c = cancel;
 			emitter.on(name, onEvent);
 			emitter.on('error', onError);
-		}) as once.CancellablePromise<T>;
+		}) as once.CancelablePromise<T>;
+		if (!c) {
+			throw new TypeError('Could not get `cancel()` function');
+		}
+		p.cancel = c;
 		return p;
 	}
 }
