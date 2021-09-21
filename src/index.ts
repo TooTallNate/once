@@ -1,57 +1,41 @@
 import { EventEmitter } from 'events';
+import {
+	EventNames,
+	EventListenerParameters,
+	CancelablePromise,
+	CancelFunction,
+} from './types';
 
-function noop() {}
-
-function once<T>(
-	emitter: EventEmitter,
-	name: string
-): once.CancelablePromise<T> {
-	const o = once.spread<[T]>(emitter, name);
-	const r = o.then((args: [T]) => args[0]) as once.CancelablePromise<T>;
-	r.cancel = o.cancel;
-	return r;
-}
-
-namespace once {
-	export interface CancelFunction {
-		(): void;
-	}
-
-	export interface CancelablePromise<T> extends Promise<T> {
-		cancel: CancelFunction;
-	}
-
-	export type CancellablePromise<T> = CancelablePromise<T>;
-
-	export function spread<T extends any[]>(
-		emitter: EventEmitter,
-		name: string
-	): once.CancelablePromise<T> {
-		let c: once.CancelFunction | null = null;
-		const p = new Promise<T>((resolve, reject) => {
+export default function once<
+	Emitter extends EventEmitter,
+	Event extends EventNames<Emitter>
+>(
+	emitter: Emitter,
+	name: Event
+): CancelablePromise<EventListenerParameters<Emitter, Event>> {
+	let c!: CancelFunction;
+	const p = new Promise<EventListenerParameters<Emitter, Event>>(
+		(resolve, reject) => {
+			let canceled = false;
 			function cancel() {
+				if (canceled) return;
+				canceled = true;
 				emitter.removeListener(name, onEvent);
 				emitter.removeListener('error', onError);
-				p.cancel = noop;
 			}
 			function onEvent(...args: any[]) {
-				cancel();
-				resolve(args as T);
+				p.cancel();
+				resolve(args as EventListenerParameters<Emitter, Event>);
 			}
 			function onError(err: Error) {
-				cancel();
+				p.cancel();
 				reject(err);
 			}
 			c = cancel;
 			emitter.on(name, onEvent);
 			emitter.on('error', onError);
-		}) as once.CancelablePromise<T>;
-		if (!c) {
-			throw new TypeError('Could not get `cancel()` function');
 		}
-		p.cancel = c;
-		return p;
-	}
+	) as CancelablePromise<EventListenerParameters<Emitter, Event>>;
+	p.cancel = c;
+	return p;
 }
-
-export = once;
