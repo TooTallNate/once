@@ -6,7 +6,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "module": "CommonJS",
-    "target": "ES2017",
+    "target": "ES2018",
     "esModuleInterop": true,
     "lib": ["esnext"],
     "outDir": "dist",
