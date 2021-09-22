@@ -24,7 +24,7 @@ export type EventListenerParameters<
 	Event extends EventNames<Emitter>
 > = WithDefault<
 	Parameters<EventListener<EventParameters<Emitter>, Event>>,
-	any[]
+	unknown[]
 >;
 
 export type WithDefault<T, D> = [T] extends [never] ? D : T;
