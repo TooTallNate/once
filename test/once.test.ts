@@ -12,6 +12,15 @@ describe('once()', () => {
 		expect(foo).toEqual('bar');
 	});
 
+	it('should work with vanilla EventEmitter - nextTick', async () => {
+		const ee = new EventEmitter();
+		process.nextTick(() => {
+			ee.emit('myevent', 42);
+		});
+		const [value] = await once(ee, 'myevent');
+		expect(value).toEqual(42);
+	});
+
 	it('should reject Promise upon "error" event', async () => {
 		let err: Error | null = null;
 		const emitter = new EventEmitter();
@@ -21,6 +30,22 @@ describe('once()', () => {
 		emitter.emit('error', new Error('test'));
 		await promise;
 		expect(err!.message).toEqual('test');
+	});
+
+	it('should reject Promise upon "error" event - nextTick', async () => {
+		const ee = new EventEmitter();
+
+		const err = new Error('kaboom');
+		process.nextTick(() => {
+			ee.emit('error', err);
+		});
+
+		try {
+			await once(ee, 'myevent');
+			throw new Error('Should not happen');
+		} catch (err: any) {
+			expect(err.message).toEqual('kaboom');
+		}
 	});
 
 	it('should work with interface extending EventEmitter with overload', async () => {
@@ -45,7 +70,8 @@ describe('once()', () => {
 		const promise: Promise<[string, unknown]> = once(emitter, 'foo');
 		emitter.emit('foo', 'bar', 4);
 		const [a] = await promise;
-		expect(a).toEqual('bar');
+		// TypeScript will fail if `a` is not `string` type
+		expect(a.toUpperCase()).toEqual('BAR');
 	});
 
 	it('should work with ChildProcess "exit" event', async () => {
