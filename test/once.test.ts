@@ -82,12 +82,36 @@ describe('once()', () => {
 	});
 
 	it('should be abortable with `AbortController`', async () => {
+		let wasResolved = false;
 		const emitter = new EventEmitter();
 		const controller = new AbortController();
 		const { signal } = controller;
-		const promise = once(emitter, 'foo', { signal });
-		emitter.emit('foo', 'bar');
-		const [foo] = await promise;
-		expect(foo).toEqual('bar');
+
+		const onResolve = () => {
+			wasResolved = true;
+		};
+		once(emitter, 'foo', { signal }).then(onResolve, onResolve);
+
+		// First time without `abort()`, so it will be fulfilled
+		emitter.emit('foo');
+
+		// Promise is fulfilled on next tick, so wait a bit
+		await new Promise((r) => process.nextTick(r));
+
+		expect(wasResolved).toEqual(true);
+
+		// Reset
+		wasResolved = false;
+
+		once(emitter, 'foo', { signal }).then(onResolve, onResolve);
+
+		// This time abort
+		controller.abort();
+		emitter.emit('foo');
+
+		// Promise is fulfilled on next tick, so wait a bit
+		await new Promise((r) => process.nextTick(r));
+
+		expect(wasResolved).toEqual(false);
 	});
 });
