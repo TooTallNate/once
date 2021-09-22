@@ -22,14 +22,20 @@ export type EventNames<Emitter extends EventEmitter> = FirstParameter<
 export type EventListenerParameters<
 	Emitter extends EventEmitter,
 	Event extends EventNames<Emitter>
-> = WithDefault<Parameters<EventListener<EventParameters<Emitter>, Event>>>;
+> = WithDefault<
+	Parameters<EventListener<EventParameters<Emitter>, Event>>,
+	any[]
+>;
 
-export interface CancelFunction {
-	(): void;
+export type WithDefault<T, D> = [T] extends [never] ? D : T;
+
+export interface AbortSignal {
+	addEventListener: (name: string, listener: (...args: any[]) => any) => void;
+	removeEventListener: (
+		name: string,
+		listener: (...args: any[]) => any
+	) => void;
 }
-
-export interface CancelablePromise<T> extends Promise<T> {
-	cancel: CancelFunction;
+export interface AbortController {
+	signal: AbortSignal;
 }
-
-export type WithDefault<T> = [T] extends [never] ? any[] : T;

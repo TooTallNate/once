@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^12.12.11",
+    "abort-controller": "^3.0.0",
     "mocha": "^6.2.2",
     "rimraf": "^3.0.0",
     "typescript": "^4.4.3"
