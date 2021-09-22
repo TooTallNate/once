@@ -3,3 +3,4 @@
 /src/?.?s
 /dist
 /.vscode
+/*.tgz
