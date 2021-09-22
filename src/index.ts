@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
-import { AbortController, EventNames, EventListenerParameters } from './types';
+import { EventNames, EventListenerParameters, AbortSignal } from './types';
 
 export interface OnceOptions {
-	abort?: AbortController;
+	signal?: AbortSignal;
 }
 
 export default function once<
@@ -11,11 +11,11 @@ export default function once<
 >(
 	emitter: Emitter,
 	name: Event,
-	{ abort }: OnceOptions = {}
+	{ signal }: OnceOptions = {}
 ): Promise<EventListenerParameters<Emitter, Event>> {
 	return new Promise((resolve, reject) => {
 		function cleanup() {
-			abort?.signal.removeEventListener('abort', cleanup);
+			signal?.removeEventListener('abort', cleanup);
 			emitter.removeListener(name, onEvent);
 			emitter.removeListener('error', onError);
 		}
@@ -27,7 +27,7 @@ export default function once<
 			cleanup();
 			reject(err);
 		}
-		abort?.signal.addEventListener('abort', cleanup);
+		signal?.addEventListener('abort', cleanup);
 		emitter.on(name, onEvent);
 		emitter.on('error', onError);
 	});

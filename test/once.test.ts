@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import { AbortController } from 'abort-controller';
 import once from '../src';
 
 describe('once()', () => {
@@ -52,5 +53,15 @@ describe('once()', () => {
 		const [code, signal] = await once(child, 'exit');
 		expect(code).toEqual(0);
 		expect(signal).toBeNull();
+	});
+
+	it('should be abortable with `AbortController`', async () => {
+		const emitter = new EventEmitter();
+		const controller = new AbortController();
+		const { signal } = controller;
+		const promise = once(emitter, 'foo', { signal });
+		emitter.emit('foo', 'bar');
+		const [foo] = await promise;
+		expect(foo).toEqual('bar');
 	});
 });

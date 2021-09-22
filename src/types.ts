@@ -36,6 +36,3 @@ export interface AbortSignal {
 		listener: (...args: any[]) => any
 	) => void;
 }
-export interface AbortController {
-	signal: AbortSignal;
-}
