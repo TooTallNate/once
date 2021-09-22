@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
     "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "module": "CommonJS",
-    "target": "es2015",
+    "target": "ES2018",
     "esModuleInterop": true,
     "lib": ["esnext"],
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
     "typeRoots": [
       "./@types",
       "./node_modules/@types"
