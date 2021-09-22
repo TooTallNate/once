@@ -59,7 +59,15 @@ _A forked child process "message" event is type `any`, so you can cast the Promi
 
 ```typescript
 const child = fork('file.js');
-const [code, signal]:  = await once(child, 'message');
+
+// With `await`
+const [message, _]: [WorkerPayload, unknown] = await once(child, 'message');
+
+// With Promise
+const messagePromise: Promise<[WorkerPayload, unknown]> = once(child, 'message');
+
+// Better yet would be to leave it as `any`, and validate the payload
+// at runtime with i.e. `ajv` + `json-schema-to-typescript`
 ```
 
 _If the TypeScript definition does not contain an overload for the specified event name, then the Promise will have type `unknown[]` and your code will need to narrow the result manually:_
@@ -71,9 +79,11 @@ interface CustomEmitter extends EventEmitter {
 
 const emitter: CustomEmitter = new EventEmitter();
 
+// "foo" event is a defined overload, so it's properly typed
 const fooPromise = once(emitter, 'foo');
 //    ^ Promise<[a: string, b: number]>
 
+// "bar" event in not a defined overload, so it gets `unknown[]`
 const barPromise = once(emitter, 'bar');
 //    ^ Promise<unknown[]>
 ```
