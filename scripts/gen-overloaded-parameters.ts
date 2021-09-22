@@ -9,20 +9,20 @@ process.stdout.write('export type OverloadedParameters<T> = \n');
 const overloads = parseInt(process.argv[2], 10) || 5;
 
 for (let i = overloads; i > 0; i--) {
-	process.stdout.write(`T extends { `);
-	for (let j = 0; j < i; j++) {
+	process.stdout.write(`\tT extends { `);
+	for (let j = 1; j <= i; j++) {
 		process.stdout.write(
-			`(...args: infer A${String(j).padStart(2, '0')}): any; `
+			`(...args: infer A${j}): any; `
 		);
 	}
 	process.stdout.write(`} ? `);
-	for (let j = 0; j < i; j++) {
-		process.stdout.write(`A${String(j).padStart(2, '0')} `);
-		if (j < i - 1) {
+	for (let j = 1; j <= i; j++) {
+		process.stdout.write(`A${j} `);
+		if (j < i) {
 			process.stdout.write(`| `);
 		}
 	}
 	process.stdout.write(`:\n`);
 }
 
-process.stdout.write(`any\n`);
+process.stdout.write(`\tany;\n`);
