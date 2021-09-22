@@ -1,3 +1,9 @@
+/**
+ * This script generated a TypeScript file that defines
+ * a type based on this StackOverflow answer:
+ * https://stackoverflow.com/a/52761156/376773
+ */
+
 process.stdout.write('export type OverloadedParameters<T> = \n');
 
 const overloads = parseInt(process.argv[2], 10) || 5;
