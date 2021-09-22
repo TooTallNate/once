@@ -34,8 +34,11 @@ console.log({ result });
 // { result: 'bar' }
 ```
 
-The Promise that is returned is strongly typed based on the type of emitter
-and the name of the event. Some examples are shown below.
+#### Promise Strong Typing
+
+The main feature that this module provides over other "once" implementations is that
+the Promise that is returned is _**strongly typed**_ based on the type of `emitter`
+and the `name` of the event. Some examples are shown below.
 
 _The process "exit" event contains a single number for exit code:_
 
