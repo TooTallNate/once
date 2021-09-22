@@ -1,20 +1,16 @@
-@tootallnate/once
-=================
+# @tootallnate/once
+
 ### Creates a Promise that waits for a single event
 
-
-Installation
-------------
+## Installation
 
 Install with `npm`:
 
-``` bash
+```bash
 $ npm install @tootallnate/once
 ```
 
-
-API
----
+## API
 
 ### once(emitter: EventEmitter, name: string, opts?: OnceOptions): Promise&lt;[...Args]&gt;
 
@@ -28,14 +24,16 @@ import once from '@tootallnate/once';
 import { EventEmitter } from 'events';
 
 const emitter = new EventEmitter();
+
+setTimeout(() => {
+	emitter.emit('foo', 'bar');
+}, 100);
+
 const [result] = await once(emitter, 'foo');
 console.log(`got ${result}`);
-
-// ... elsewhere ...
-emitter.emit('foo', 'bar');
 // "got bar"
 ```
 
 ### OnceOptions
 
-* `signal` - `AbortSignal` from https://npmjs.com/abort-controller
+-   `signal` - `AbortSignal` from https://npmjs.com/abort-controller
