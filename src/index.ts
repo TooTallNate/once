@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { EventNames, EventListenerParameters, AbortSignal } from './types';
+import { EventNames, EventListenerParameters, AbortSignal } from './types.js';
 
 export interface OnceOptions {
 	signal?: AbortSignal;
