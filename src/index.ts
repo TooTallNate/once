@@ -19,9 +19,9 @@ export default function once<
 			emitter.removeListener(name, onEvent);
 			emitter.removeListener('error', onError);
 		}
-		function onEvent(...args: any[]) {
+		function onEvent(...args: EventListenerParameters<Emitter, Event>) {
 			cleanup();
-			resolve(args as EventListenerParameters<Emitter, Event>);
+			resolve(args);
 		}
 		function onError(err: Error) {
 			cleanup();
