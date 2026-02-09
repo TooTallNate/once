@@ -17,25 +17,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-
-    - name: Print Node.js Version
-      run: node --version
+        cache: pnpm
 
     - name: Install Dependencies
-      run: npm install
-      env:
-        CI: true
+      run: pnpm install
 
     - name: Run "build" step
-      run: npm run build --if-present
-      env:
-        CI: true
+      run: pnpm run build
 
     - name: Run tests
-      run: npm test
-      env:
-        CI: true
+      run: pnpm test
