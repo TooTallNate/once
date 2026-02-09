@@ -1,6 +1,6 @@
 {
   "name": "@tootallnate/once",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Creates a Promise that waits for a single event",
   "type": "module",
   "main": "./dist/index.js",
