@@ -15,7 +15,7 @@ export default function once<
 ): Promise<EventListenerParameters<Emitter, Event>> {
 	return new Promise((resolve, reject) => {
 		function cleanup() {
-			signal?.removeEventListener('abort', cleanup);
+			signal?.removeEventListener('abort', onAbort);
 			emitter.removeListener(name, onEvent);
 			emitter.removeListener('error', onError);
 		}
@@ -27,7 +27,17 @@ export default function once<
 			cleanup();
 			reject(err);
 		}
-		signal?.addEventListener('abort', cleanup);
+		function onAbort() {
+			cleanup();
+			const err = new Error('The operation was aborted');
+			err.name = 'AbortError';
+			reject(err);
+		}
+		if (signal?.aborted) {
+			onAbort();
+			return;
+		}
+		signal?.addEventListener('abort', onAbort);
 		emitter.on(name, onEvent);
 		emitter.on('error', onError);
 	});

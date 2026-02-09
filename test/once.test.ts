@@ -99,19 +99,80 @@ describe('once()', () => {
 		await new Promise((r) => process.nextTick(r));
 
 		expect(wasResolved).toEqual(true);
+	});
 
-		// Reset
-		wasResolved = false;
+	it('should reject with AbortError when signal is aborted', async () => {
+		const emitter = new EventEmitter();
+		const controller = new AbortController();
+		const { signal } = controller;
 
-		once(emitter, 'foo', { signal }).then(onResolve, onResolve);
+		const promise = once(emitter, 'foo', { signal });
 
-		// This time abort
+		controller.abort();
+
+		try {
+			await promise;
+			throw new Error('Should not happen');
+		} catch (err: any) {
+			expect(err.name).toEqual('AbortError');
+			expect(err.message).toEqual('The operation was aborted');
+		}
+	});
+
+	it('should reject immediately if signal is already aborted', async () => {
+		const emitter = new EventEmitter();
+		const controller = new AbortController();
+		controller.abort();
+
+		const { signal } = controller;
+
+		try {
+			await once(emitter, 'foo', { signal });
+			throw new Error('Should not happen');
+		} catch (err: any) {
+			expect(err.name).toEqual('AbortError');
+			expect(err.message).toEqual('The operation was aborted');
+		}
+	});
+
+	it('should not resolve with event after being aborted', async () => {
+		const emitter = new EventEmitter();
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		let wasResolved = false;
+		let wasRejected = false;
+
+		const promise = once(emitter, 'foo', { signal }).then(
+			() => { wasResolved = true; },
+			() => { wasRejected = true; }
+		);
+
+		// Abort first, then emit
 		controller.abort();
 		emitter.emit('foo');
 
-		// Promise is fulfilled on next tick, so wait a bit
-		await new Promise((r) => process.nextTick(r));
+		await promise;
 
 		expect(wasResolved).toEqual(false);
+		expect(wasRejected).toEqual(true);
+	});
+
+	it('should clean up listeners on the emitter when aborted', async () => {
+		const emitter = new EventEmitter();
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		once(emitter, 'foo', { signal }).catch(() => {});
+
+		expect(emitter.listenerCount('foo')).toEqual(1);
+		expect(emitter.listenerCount('error')).toEqual(1);
+
+		controller.abort();
+
+		await new Promise((r) => process.nextTick(r));
+
+		expect(emitter.listenerCount('foo')).toEqual(0);
+		expect(emitter.listenerCount('error')).toEqual(0);
 	});
 });

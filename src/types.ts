@@ -30,6 +30,7 @@ export type EventListenerParameters<
 export type WithDefault<T, D> = [T] extends [never] ? D : T;
 
 export interface AbortSignal {
+	aborted: boolean;
 	addEventListener: (name: string, listener: (...args: any[]) => any) => void;
 	removeEventListener: (
 		name: string,
